@@ -25,5 +25,9 @@ namespace Gameboard.Api.Data
         public string Events { get; set; }
         public string Submissions { get; set; }
         public string TeamMembers { get; set; }
+        public DateTimeOffset TeamCreatedOn { get; set; }
+        public string InvitationHostId { get; set; }
+        public string InviteCode { get; set; }
+
     }
 }

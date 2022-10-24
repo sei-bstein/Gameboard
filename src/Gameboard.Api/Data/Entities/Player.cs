@@ -11,7 +11,6 @@ namespace Gameboard.Api.Data
     public class Player : IEntity
     {
         public string Id { get; set; }
-        public string TeamId { get; set; }
         public string UserId { get; set; }
         public string GameId { get; set; }
         public string ApprovedName { get; set; }
@@ -32,9 +31,15 @@ namespace Gameboard.Api.Data
         public bool Advanced { get; set; }
         public User User { get; set; }
         public Game Game { get; set; }
+
+        public string TeamId { get; set; }
+        public Team Team { get; set; }
+        public Team InvitationHostForTeam { get; set; }
+
         public ICollection<Challenge> Challenges { get; set; } = new List<Challenge>();
         [NotMapped] public bool IsManager => Role == PlayerRole.Manager;
-        [NotMapped] public bool IsLive =>
+        [NotMapped]
+        public bool IsLive =>
             SessionBegin > DateTimeOffset.MinValue &&
             SessionBegin < DateTimeOffset.UtcNow &&
             SessionEnd > DateTimeOffset.UtcNow

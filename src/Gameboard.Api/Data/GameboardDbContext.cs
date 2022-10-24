@@ -8,15 +8,14 @@ namespace Gameboard.Api.Data
     public class GameboardDbContext : DbContext
     {
         public GameboardDbContext(DbContextOptions options)
-            : base(options)
-        {
-        }
+            : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<User>(b => {
+            builder.Entity<User>(b =>
+            {
                 b.Property(u => u.Id).HasMaxLength(40);
                 b.Property(u => u.Username).HasMaxLength(64);
                 b.Property(u => u.ApprovedName).HasMaxLength(64);
@@ -26,22 +25,37 @@ namespace Gameboard.Api.Data
                 b.Property(u => u.Sponsor).HasMaxLength(40);
             });
 
-            builder.Entity<Player>(b => {
+            builder.Entity<Player>(b =>
+            {
                 b.HasOne(p => p.User).WithMany(u => u.Enrollments).OnDelete(DeleteBehavior.Cascade);
-                b.HasIndex(p => p.TeamId);
                 b.Property(p => p.Id).HasMaxLength(40);
-                b.Property(p => p.TeamId).HasMaxLength(40);
                 b.Property(p => p.UserId).HasMaxLength(40);
                 b.Property(p => p.GameId).HasMaxLength(40);
+                b.Property(p => p.TeamId).HasStandardIdMaxLength();
                 b.Property(p => p.ApprovedName).HasMaxLength(64);
                 b.Property(p => p.Name).HasMaxLength(64);
                 b.Property(p => p.NameStatus).HasMaxLength(40);
                 b.Property(p => p.Sponsor).HasMaxLength(40);
                 b.Property(p => p.TeamSponsors).HasMaxLength(255);
-                b.Property(p => p.InviteCode).HasMaxLength(40);
             });
 
-            builder.Entity<Game>(b => {
+            builder.Entity<Team>(e =>
+            {
+                e.HasKey(t => t.Id);
+                e.Property(e => e.Id).HasStandardIdMaxLength();
+                e.Property(e => e.InviteCode).HasStandardIdMaxLength();
+
+                e.HasOne(e => e.InvitationHost)
+                    .WithOne(p => p.InvitationHostForTeam)
+                    .HasForeignKey<Team>(t => t.InivitationHostId);
+
+                e.HasMany(e => e.Players)
+                    .WithOne(p => p.Team)
+                    .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<Game>(b =>
+            {
                 b.Property(u => u.Id).HasMaxLength(40);
                 b.Property(p => p.Sponsor).HasMaxLength(40);
                 b.Property(p => p.TestCode).HasMaxLength(40);
@@ -60,8 +74,8 @@ namespace Gameboard.Api.Data
                 b.Property(p => p.Mode).HasMaxLength(40);
             });
 
-
-            builder.Entity<Challenge>(b => {
+            builder.Entity<Challenge>(b =>
+            {
                 b.HasOne(p => p.Player).WithMany(u => u.Challenges).OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(p => p.Game).WithMany(u => u.Challenges).OnDelete(DeleteBehavior.SetNull);
                 b.HasIndex(p => p.TeamId);
@@ -74,7 +88,8 @@ namespace Gameboard.Api.Data
                 b.Property(u => u.GraderKey).HasMaxLength(64);
             });
 
-            builder.Entity<ChallengeEvent>(b => {
+            builder.Entity<ChallengeEvent>(b =>
+            {
                 b.HasOne(p => p.Challenge).WithMany(u => u.Events).OnDelete(DeleteBehavior.Cascade);
                 b.Property(u => u.Id).HasMaxLength(40);
                 b.Property(u => u.ChallengeId).HasMaxLength(40);
@@ -83,14 +98,16 @@ namespace Gameboard.Api.Data
                 b.Property(u => u.Text).HasMaxLength(1024);
             });
 
-            builder.Entity<ChallengeSpec>(b => {
+            builder.Entity<ChallengeSpec>(b =>
+            {
                 b.HasOne(p => p.Game).WithMany(u => u.Specs).OnDelete(DeleteBehavior.Cascade);
                 b.Property(u => u.Id).HasMaxLength(40);
                 b.Property(u => u.GameId).HasMaxLength(40);
                 b.Property(u => u.ExternalId).HasMaxLength(40);
             });
 
-            builder.Entity<ChallengeGate>(b => {
+            builder.Entity<ChallengeGate>(b =>
+            {
                 b.HasOne(p => p.Game).WithMany(u => u.Prerequisites).OnDelete(DeleteBehavior.Cascade);
                 b.Property(g => g.Id).HasMaxLength(40);
                 b.Property(g => g.TargetId).HasMaxLength(40);
@@ -98,12 +115,14 @@ namespace Gameboard.Api.Data
                 b.Property(g => g.GameId).HasMaxLength(40);
             });
 
-            builder.Entity<Sponsor>(b => {
+            builder.Entity<Sponsor>(b =>
+            {
                 b.Property(u => u.Id).HasMaxLength(40);
                 b.Property(u => u.Name).HasMaxLength(128);
             });
 
-            builder.Entity<Feedback>(b => {
+            builder.Entity<Feedback>(b =>
+            {
                 b.HasOne(p => p.User).WithMany(u => u.Feedback).OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(p => p.Player).WithMany(u => u.Feedback).OnDelete(DeleteBehavior.Cascade);
                 b.HasOne(p => p.Game).WithMany(u => u.Feedback).OnDelete(DeleteBehavior.Cascade);
@@ -117,7 +136,8 @@ namespace Gameboard.Api.Data
                 b.Property(u => u.GameId).HasMaxLength(40);
             });
 
-            builder.Entity<ArchivedChallenge>(b => {
+            builder.Entity<ArchivedChallenge>(b =>
+            {
                 // Archive is snapshot with no foreign keys; explicitly index Id fields for searching
                 b.HasIndex(p => p.TeamId);
                 b.HasIndex(p => p.GameId);
@@ -130,9 +150,12 @@ namespace Gameboard.Api.Data
                 b.Property(u => u.PlayerId).HasMaxLength(40);
                 b.Property(p => p.PlayerName).HasMaxLength(64);
                 b.Property(u => u.UserId).HasMaxLength(40);
+                b.Property(b => b.InvitationHostId).HasStandardIdMaxLength();
+                b.Property(b => b.InviteCode).HasStandardIdMaxLength();
             });
 
-            builder.Entity<Ticket>(b => {
+            builder.Entity<Ticket>(b =>
+            {
                 b.HasOne(p => p.Challenge).WithMany(u => u.Tickets).OnDelete(DeleteBehavior.SetNull);
                 b.HasOne(p => p.Player).WithMany(u => u.Tickets).OnDelete(DeleteBehavior.SetNull);
                 b.Property(u => u.Id).HasMaxLength(40);
@@ -148,7 +171,8 @@ namespace Gameboard.Api.Data
                 b.HasIndex(u => u.Key).IsUnique();
             });
 
-            builder.Entity<TicketActivity>(b => {
+            builder.Entity<TicketActivity>(b =>
+            {
                 b.HasOne(p => p.Ticket).WithMany(u => u.Activity).OnDelete(DeleteBehavior.Cascade);
                 b.Property(u => u.TicketId).HasMaxLength(40);
                 b.Property(u => u.UserId).HasMaxLength(40);
@@ -158,6 +182,7 @@ namespace Gameboard.Api.Data
 
         }
 
+        public DbSet<Team> Teams { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<Game> Games { get; set; }

@@ -27,7 +27,7 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- <Nullable>true</Nullable> -->
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
-
 </Project>

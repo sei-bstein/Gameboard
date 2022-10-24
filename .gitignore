@@ -10,6 +10,8 @@ appsettings.Development.*
 /out-tsc
 # Only exists if Bazel was run
 /bazel-out
+bin/*
+obj/*
 
 # dependencies
 /node_modules
