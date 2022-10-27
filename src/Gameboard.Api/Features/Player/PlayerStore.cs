@@ -3,19 +3,16 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Gameboard.Api.Data.Abstractions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gameboard.Api.Data
 {
 
-    public class PlayerStore: Store<Player>, IPlayerStore
+    public class PlayerStore : Store<Player>, IPlayerStore
     {
         public PlayerStore(GameboardDbContext dbContext)
-        :base(dbContext)
-        {
-
-        }
+        : base(dbContext) { }
 
         public async Task<Player> Load(string id)
         {

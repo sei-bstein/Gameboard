@@ -3,10 +3,9 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Gameboard.Api.Data.Abstractions;
+using Gameboard.Api.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
@@ -149,8 +148,8 @@ namespace Gameboard.Api
 
             app.UseEndpoints(ep =>
             {
-                ep.MapHub<Hubs.AppHub>("/hub").RequireAuthorization();
-
+                ep.MapHub<AppHub>("/hub").RequireAuthorization();
+                ep.MapHub<PlayerPresenceHub>("/hub/player-presence").RequireAuthorization();
                 ep.MapControllers().RequireAuthorization();
             });
         }
