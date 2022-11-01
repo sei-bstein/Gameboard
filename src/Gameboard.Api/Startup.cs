@@ -63,7 +63,8 @@ namespace Gameboard.Api
             services.AddMvc()
             .AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+
                 options.JsonSerializerOptions.Converters
                     .Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
@@ -93,6 +94,7 @@ namespace Gameboard.Api
             services.AddSignalR()
                 .AddJsonProtocol(options =>
                 {
+                    options.PayloadSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                     options.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter(
                         JsonNamingPolicy.CamelCase
                     ));
